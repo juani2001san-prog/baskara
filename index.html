@@ -253,12 +253,6 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
     </div>
     <div class="filters" id="filters">
       <button class="filter is-active" data-filter="todo">Todo</button>
-      <button class="filter" data-filter="ropa">Ropa</button>
-      <button class="filter" data-filter="tecnologia">Tecnología</button>
-      <button class="filter" data-filter="muebles">Muebles</button>
-      <button class="filter" data-filter="bebes">Bebés</button>
-      <button class="filter" data-filter="hogar">Hogar</button>
-      <button class="filter" data-filter="accesorios">Accesorios</button>
     </div>
     <div class="grid" id="productGrid"></div>
   </div>
@@ -399,12 +393,31 @@ function cardHTML(p) {
       </div>
     </article>`;
 }
+const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+// Arma los botones de filtro solos según las categorías que uses en tus productos
+function buildFilters() {
+  const cats = [];
+  products.forEach(p => {
+    const c = (p.cat || "").trim();
+    if (c && !cats.some(x => x.toLowerCase() === c.toLowerCase())) cats.push(c);
+  });
+  const activeEl = document.querySelector(".filter.is-active");
+  const active = activeEl ? activeEl.dataset.filter : "todo";
+  document.getElementById("filters").innerHTML =
+    `<button class="filter" data-filter="todo">Todo</button>` +
+    cats.map(c => `<button class="filter" data-filter="${c}">${cap(c)}</button>`).join("");
+  const btns = document.querySelectorAll(".filter");
+  let matched = false;
+  btns.forEach(b => { if (b.dataset.filter.toLowerCase() === active.toLowerCase()) { b.classList.add("is-active"); matched = true; } });
+  if (!matched && btns[0]) btns[0].classList.add("is-active");
+}
 function render(filter = "todo") {
-  const list = products.filter(p => filter === "todo" || p.cat === filter);
+  const list = products.filter(p => filter === "todo" || (p.cat || "").toLowerCase() === filter.toLowerCase());
   grid.innerHTML = list.length
     ? list.map(cardHTML).join("")
     : `<p style="grid-column:1/-1;text-align:center;color:var(--ink-soft);padding:2rem">No hay productos en esta categoría todavía.</p>`;
 }
+buildFilters();
 render();
 
 // Cargar productos reales desde Supabase (si config.js está configurado)
@@ -421,7 +434,9 @@ async function loadProducts() {
     if (Array.isArray(data)) {
       products = data;
       const active = document.querySelector(".filter.is-active");
-      render(active ? active.dataset.filter : "todo");
+      const cur = active ? active.dataset.filter : "todo";
+      buildFilters();
+      render(cur);
     }
   } catch (e) { console.warn("No se pudieron cargar productos de Supabase:", e.message); }
 }

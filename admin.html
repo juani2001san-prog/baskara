@@ -112,14 +112,9 @@ textarea{resize:vertical;min-height:60px}
         </div>
         <div>
           <label>Categoría *</label>
-          <select id="pCat">
-            <option value="ropa">Ropa</option>
-            <option value="tecnologia">Tecnología</option>
-            <option value="muebles">Muebles</option>
-            <option value="bebes">Bebés</option>
-            <option value="hogar">Hogar</option>
-            <option value="accesorios">Accesorios</option>
-          </select>
+          <input type="text" id="pCat" list="catsList" required autocomplete="off" placeholder="Ej: Mujeres, Hombres, Tecnología" />
+          <datalist id="catsList"></datalist>
+          <p class="muted" style="margin-top:.3rem;font-size:.78rem">Elegí una de la lista o escribí una nueva — se crea sola.</p>
         </div>
         <div>
           <label>Precio (en pesos) *</label>
@@ -265,9 +260,17 @@ if (!configured() || !window.supabase) {
     loadList();
   }
 
+  const DEFAULT_CATS = ["Mujeres","Hombres","Ropa","Tecnología","Muebles","Bebés","Hogar","Accesorios"];
+  function fillCats(data){
+    const set = [...DEFAULT_CATS];
+    (data||[]).forEach(p => { const c=(p.cat||"").trim(); if(c && !set.some(x=>x.toLowerCase()===c.toLowerCase())) set.push(c); });
+    $("catsList").innerHTML = set.map(c => `<option value="${c}"></option>`).join("");
+  }
+
   async function loadList(){
     const { data, error } = await sb.from("productos").select("*").order("created_at", { ascending:false });
     if (error) { $("list").innerHTML = `<p class="msg msg--err">Error al cargar: ${error.message}</p>`; return; }
+    fillCats(data);
     $("count").textContent = data.length;
     if (!data.length){ $("list").innerHTML = `<p class="muted">Todavía no cargaste ningún producto. ¡Agregá el primero arriba!</p>`; return; }
     $("list").innerHTML = "";
