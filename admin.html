@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Baskara · Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#f6f2ec; --bg-soft:#efe8dd; --ink:#2c2724; --ink-soft:#6b615a;
+  --accent:#7a8b6f; --accent-dark:#5c6b52; --terra:#b9765a; --card:#fffdf9; --line:#e2d8c9;
+  --font-serif:"Cormorant Garamond",Georgia,serif; --font-sans:"Jost",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--ink);line-height:1.6;font-weight:300;-webkit-font-smoothing:antialiased}
+a{color:var(--accent-dark)}
+.wrap{width:min(920px,92%);margin:0 auto;padding:2rem 0 4rem}
+.top{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 0;border-bottom:1px solid var(--line);margin-bottom:2rem}
+.logo{font-family:var(--font-serif);font-size:1.6rem;font-weight:600}
+.logo small{font-family:var(--font-sans);font-weight:400;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin-left:.4rem}
+h1,h2{font-family:var(--font-serif);font-weight:500}
+h2{font-size:1.6rem;margin-bottom:1rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.7rem 1.3rem;border-radius:100px;border:1px solid transparent;font-family:var(--font-sans);font-size:.9rem;cursor:pointer;transition:.2s}
+.btn--dark{background:var(--ink);color:#fff}
+.btn--dark:hover{background:var(--accent-dark)}
+.btn--ghost{background:transparent;border-color:var(--line);color:var(--ink)}
+.btn--ghost:hover{border-color:var(--ink)}
+.btn--sm{padding:.4rem .8rem;font-size:.8rem}
+.btn--danger{color:var(--terra);border-color:var(--terra);background:transparent}
+.btn--danger:hover{background:var(--terra);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.6rem}
+.hidden{display:none!important}
+/* Login */
+.login{max-width:380px;margin:8vh auto 0}
+.login .card{padding:2rem}
+label{display:block;font-size:.82rem;color:var(--ink-soft);margin:.9rem 0 .3rem;letter-spacing:.02em}
+input,select,textarea{width:100%;padding:.7rem .9rem;border:1px solid var(--line);border-radius:10px;background:#fff;font-family:var(--font-sans);font-size:.95rem;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+textarea{resize:vertical;min-height:60px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.msg{font-size:.85rem;padding:.7rem .9rem;border-radius:10px;margin-top:1rem}
+.msg--err{background:#f8e3dc;color:#9a4a30}
+.msg--ok{background:#e3ecdd;color:#48632f}
+.notice{background:#fff8ec;border:1px solid #eadfc4;border-radius:12px;padding:1.2rem;font-size:.9rem;color:#7a6a45;margin-bottom:1.5rem}
+.notice code{background:#efe3c9;padding:.1rem .35rem;border-radius:5px;font-size:.85em}
+.grid-form{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.full{grid-column:1/-1}
+.check{display:flex;align-items:center;gap:.5rem;margin-top:1.4rem}
+.check input{width:auto}
+.prod{display:flex;gap:1rem;align-items:center;padding:.9rem 0;border-bottom:1px solid var(--line)}
+.prod:last-child{border-bottom:none}
+.prod img{width:56px;height:70px;object-fit:cover;border-radius:8px;background:var(--bg-soft);flex-shrink:0}
+.prod__info{flex:1;min-width:0}
+.prod__info b{font-weight:500}
+.prod__info span{display:block;font-size:.8rem;color:var(--ink-soft)}
+.prod__actions{display:flex;gap:.5rem;flex-shrink:0}
+.tag-sold{font-size:.7rem;background:var(--terra);color:#fff;padding:.1rem .5rem;border-radius:100px;margin-left:.4rem}
+.preview-img{width:80px;height:100px;object-fit:cover;border-radius:8px;margin-top:.5rem;display:none}
+.muted{color:var(--ink-soft);font-size:.85rem}
+@media(max-width:640px){.row,.grid-form{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- Aviso si falta configurar Supabase -->
+<div id="setupNotice" class="wrap hidden">
+  <div class="top"><span class="logo">baskara <small>panel</small></span><a href="index.html" class="btn btn--ghost btn--sm">Ver tienda</a></div>
+  <div class="notice">
+    <strong>Falta conectar la base de datos.</strong><br/>
+    Para que el panel funcione, editá el archivo <code>config.js</code> y pegá tu <code>SUPABASE_URL</code> y tu <code>SUPABASE_ANON_KEY</code>.
+    Además corré una vez el archivo <code>supabase-setup.sql</code> en el SQL Editor de Supabase y creá tu usuario admin.
+  </div>
+</div>
+
+<!-- Login -->
+<div id="loginView" class="login hidden">
+  <div class="top" style="justify-content:center;border:none"><span class="logo">baskara <small>panel</small></span></div>
+  <div class="card">
+    <h2>Entrar al panel</h2>
+    <p class="muted">Ingresá con tu email y contraseña de administradora.</p>
+    <form id="loginForm">
+      <label>Email</label>
+      <input type="email" id="email" required autocomplete="username" />
+      <label>Contraseña</label>
+      <input type="password" id="password" required autocomplete="current-password" />
+      <div style="margin-top:1.3rem"><button class="btn btn--dark" style="width:100%">Entrar</button></div>
+    </form>
+    <div id="loginMsg"></div>
+    <p style="text-align:center;margin-top:1.2rem"><a href="index.html">← Volver a la tienda</a></p>
+  </div>
+</div>
+
+<!-- Panel -->
+<div id="panelView" class="wrap hidden">
+  <div class="top">
+    <span class="logo">baskara <small>panel</small></span>
+    <div style="display:flex;gap:.6rem">
+      <a href="index.html" class="btn btn--ghost btn--sm">Ver tienda</a>
+      <button id="logoutBtn" class="btn btn--ghost btn--sm">Salir</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:2rem">
+    <h2 id="formTitle">Agregar producto</h2>
+    <form id="productForm">
+      <div class="grid-form">
+        <div class="full">
+          <label>Nombre del producto *</label>
+          <input type="text" id="pTitle" required placeholder="Ej: Campera denim, iPhone 11, Silla de madera" />
+        </div>
+        <div>
+          <label>Categoría *</label>
+          <select id="pCat">
+            <option value="ropa">Ropa</option>
+            <option value="tecnologia">Tecnología</option>
+            <option value="muebles">Muebles</option>
+            <option value="bebes">Bebés</option>
+            <option value="hogar">Hogar</option>
+            <option value="accesorios">Accesorios</option>
+          </select>
+        </div>
+        <div>
+          <label>Precio (en pesos) *</label>
+          <input type="number" id="pPrice" required min="0" step="1" placeholder="15000" />
+        </div>
+        <div class="full">
+          <label>Detalle (talle, estado, medidas, lo que quieras)</label>
+          <input type="text" id="pDetail" placeholder="Ej: Talle M · Muy bueno" />
+        </div>
+        <div class="full">
+          <label>Foto</label>
+          <input type="file" id="pImage" accept="image/*" />
+          <img id="pPreview" class="preview-img" alt="preview" />
+        </div>
+        <div class="check">
+          <input type="checkbox" id="pSold" /><label for="pSold" style="margin:0">Marcar como vendido</label>
+        </div>
+      </div>
+      <div style="margin-top:1.4rem;display:flex;gap:.6rem">
+        <button type="submit" id="saveBtn" class="btn btn--dark">Guardar producto</button>
+        <button type="button" id="cancelBtn" class="btn btn--ghost hidden">Cancelar edición</button>
+      </div>
+    </form>
+    <div id="formMsg"></div>
+  </div>
+
+  <div class="card">
+    <h2>Tus productos (<span id="count">0</span>)</h2>
+    <div id="list"><p class="muted">Cargando…</p></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const money = n => "$" + Number(n||0).toLocaleString("es-AR");
+
+function configured(){
+  return window.SUPABASE_URL && window.SUPABASE_ANON_KEY &&
+    !window.SUPABASE_URL.includes("TU-PROYECTO") && window.SUPABASE_ANON_KEY !== "TU-ANON-KEY";
+}
+
+if (!configured() || !window.supabase) {
+  $("setupNotice").classList.remove("hidden");
+} else {
+  const sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+  let editingId = null, editingImg = "";
+
+  function show(view){ ["setupNotice","loginView","panelView"].forEach(v=>$(v).classList.add("hidden")); $(view).classList.remove("hidden"); }
+  function msg(el, text, ok){ el.innerHTML = `<div class="msg ${ok?'msg--ok':'msg--err'}">${text}</div>`; }
+
+  // ----- Sesión -----
+  async function init(){
+    const { data:{ session } } = await sb.auth.getSession();
+    if (session) { show("panelView"); loadList(); } else { show("loginView"); }
+  }
+
+  $("loginForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    $("loginMsg").innerHTML = "";
+    const { error } = await sb.auth.signInWithPassword({ email:$("email").value.trim(), password:$("password").value });
+    if (error) { msg($("loginMsg"), "No se pudo entrar: " + (error.message==="Invalid login credentials" ? "email o contraseña incorrectos" : error.message)); return; }
+    show("panelView"); loadList();
+  });
+
+  $("logoutBtn").addEventListener("click", async () => { await sb.auth.signOut(); resetForm(); show("loginView"); });
+
+  // ----- Vista previa de la foto -----
+  $("pImage").addEventListener("change", () => {
+    const f = $("pImage").files[0];
+    const prev = $("pPreview");
+    if (f) { prev.src = URL.createObjectURL(f); prev.style.display = "block"; }
+    else { prev.style.display = "none"; }
+  });
+
+  // ----- Guardar (agregar o editar) -----
+  $("productForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const btn = $("saveBtn"); btn.disabled = true; const original = btn.textContent; btn.textContent = "Guardando…";
+    $("formMsg").innerHTML = "";
+    try {
+      let imgUrl = editingImg || "";
+      const file = $("pImage").files[0];
+      if (file) {
+        const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+        const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { error: upErr } = await sb.storage.from("productos").upload(path, file, { upsert:false });
+        if (upErr) throw upErr;
+        imgUrl = sb.storage.from("productos").getPublicUrl(path).data.publicUrl;
+      }
+      const row = {
+        title: $("pTitle").value.trim(),
+        cat: $("pCat").value,
+        detail: $("pDetail").value.trim(),
+        price: Number($("pPrice").value),
+        img: imgUrl,
+        sold: $("pSold").checked
+      };
+      let error;
+      if (editingId) ({ error } = await sb.from("productos").update(row).eq("id", editingId));
+      else ({ error } = await sb.from("productos").insert(row));
+      if (error) throw error;
+      msg($("formMsg"), editingId ? "Producto actualizado ✓" : "Producto agregado ✓", true);
+      resetForm(); loadList();
+    } catch (err) {
+      msg($("formMsg"), "Error: " + err.message);
+    } finally {
+      btn.disabled = false; btn.textContent = original;
+    }
+  });
+
+  $("cancelBtn").addEventListener("click", resetForm);
+
+  function resetForm(){
+    editingId = null; editingImg = "";
+    $("productForm").reset();
+    $("pPreview").style.display = "none";
+    $("formTitle").textContent = "Agregar producto";
+    $("saveBtn").textContent = "Guardar producto";
+    $("cancelBtn").classList.add("hidden");
+  }
+
+  function edit(p){
+    editingId = p.id; editingImg = p.img || "";
+    $("pTitle").value = p.title || "";
+    $("pCat").value = p.cat || "ropa";
+    $("pPrice").value = p.price || 0;
+    $("pDetail").value = p.detail || "";
+    $("pSold").checked = !!p.sold;
+    const prev = $("pPreview");
+    if (p.img){ prev.src = p.img; prev.style.display = "block"; } else prev.style.display = "none";
+    $("formTitle").textContent = "Editar producto";
+    $("saveBtn").textContent = "Guardar cambios";
+    $("cancelBtn").classList.remove("hidden");
+    window.scrollTo({ top:0, behavior:"smooth" });
+  }
+
+  async function del(p){
+    if (!confirm(`¿Borrar "${p.title}"? No se puede deshacer.`)) return;
+    const { error } = await sb.from("productos").delete().eq("id", p.id);
+    if (error) { alert("Error al borrar: " + error.message); return; }
+    loadList();
+  }
+
+  async function loadList(){
+    const { data, error } = await sb.from("productos").select("*").order("created_at", { ascending:false });
+    if (error) { $("list").innerHTML = `<p class="msg msg--err">Error al cargar: ${error.message}</p>`; return; }
+    $("count").textContent = data.length;
+    if (!data.length){ $("list").innerHTML = `<p class="muted">Todavía no cargaste ningún producto. ¡Agregá el primero arriba!</p>`; return; }
+    $("list").innerHTML = "";
+    data.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "prod";
+      div.innerHTML = `
+        <img src="${p.img||""}" alt="" onerror="this.style.visibility='hidden'"/>
+        <div class="prod__info">
+          <b>${p.title}</b>${p.sold?'<span class="tag-sold">Vendido</span>':''}
+          <span>${p.cat} · ${p.detail||"—"} · ${money(p.price)}</span>
+        </div>
+        <div class="prod__actions">
+          <button class="btn btn--ghost btn--sm">Editar</button>
+          <button class="btn btn--danger btn--sm">Borrar</button>
+        </div>`;
+      div.querySelector(".btn--ghost").addEventListener("click", () => edit(p));
+      div.querySelector(".btn--danger").addEventListener("click", () => del(p));
+      $("list").appendChild(div);
+    });
+  }
+
+  init();
+}
+</script>
+</body>
+</html>
