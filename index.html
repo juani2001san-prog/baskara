@@ -79,8 +79,7 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
 .nav-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; }
 .nav-toggle span { width: 24px; height: 2px; background: var(--ink); transition: .3s; }
 .hero { padding: clamp(3rem, 8vw, 6rem) 0; overflow: hidden; }
-.hero__inner { display: grid; grid-template-columns: 1fr; gap: 3rem; }
-.hero__text { max-width: 640px; }
+.hero__inner { display: grid; grid-template-columns: 1.05fr .95fr; gap: 3rem; align-items: center; }
 .hero__lead { color: var(--ink-soft); font-size: 1.08rem; max-width: 460px; margin: 1.4rem 0 2rem; }
 .hero__actions { display: flex; gap: 1rem; flex-wrap: wrap; }
 .hero__stats { display: flex; gap: 2.4rem; margin-top: 3rem; flex-wrap: wrap; }
@@ -90,6 +89,7 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
 .hero__photo { aspect-ratio: 4/5; border-radius: 220px 220px var(--radius) var(--radius); overflow: hidden; box-shadow: var(--shadow); }
 .hero__photo img { width: 100%; height: 100%; object-fit: cover; }
 .hero__tag { position: absolute; bottom: 24px; left: -16px; background: var(--card); padding: .7rem 1.2rem; border-radius: 100px; box-shadow: var(--shadow); font-size: .9rem; border: 1px solid var(--line); }
+.hero__tag--2 { bottom: auto; top: 24px; left: auto; right: -16px; }
 .values { padding: 2rem 0 3rem; }
 .values__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; }
 .value { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.7rem 1.5rem; transition: .25s; }
@@ -256,6 +256,11 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
         <a href="#contacto" class="btn btn--ghost">Contacto</a>
       </div>
     </div>
+    <div class="hero__art">
+      <div class="hero__photo"><img src="https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=800&q=80" alt="Ropa seleccionada" loading="lazy"/></div>
+      <div class="hero__tag">♲ Segunda vida</div>
+      <div class="hero__tag hero__tag--2">🚚 Envíos a todo el país</div>
+    </div>
   </div>
 </section>
 
@@ -319,7 +324,7 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
 
 <section class="about" id="nosotras">
   <div class="container about__inner">
-    <div class="about__img"><img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=700&q=80" alt="Detrás de Baskara" loading="lazy"/></div>
+    <div class="about__img"><img src="nosotras.jpg" alt="Prenda seleccionada de Baskara" loading="lazy"/></div>
     <div class="about__text">
       <p class="eyebrow">Nosotras</p>
       <h2>Detrás de Baskara</h2>
