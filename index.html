@@ -521,6 +521,8 @@ function toast(msg) {
 }
 // Botón flotante de WhatsApp
 document.getElementById("waFloat").href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent("¡Hola Baskara! Quería consultarte por una prenda 🌿")}`;
+// Actualizar TODOS los links de WhatsApp (Contacto, footer) con el número de config.js
+document.querySelectorAll('a[href*="wa.me/"]').forEach(a => { a.href = a.href.replace(/wa\.me\/\d+/, "wa.me/" + WHATSAPP); });
 
 document.getElementById("year").textContent = new Date().getFullYear();
 </script>

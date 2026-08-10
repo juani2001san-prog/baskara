@@ -12,4 +12,4 @@ window.SUPABASE_ANON_KEY = "sb_publishable_FWn5xR1tBL29jWeixfVXkg_3QR-uFYH";
 
 // Tu número de WhatsApp con código de país, sin + ni espacios.
 // Ej Argentina: 5491135551234
-window.WHATSAPP = "5490000000000";
+window.WHATSAPP = "5492914299796";
