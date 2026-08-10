@@ -174,6 +174,34 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
 .wa-float:hover { transform: translateY(-3px); box-shadow: 0 14px 36px rgba(37,211,102,.5); }
 .wa-float span { line-height: 1; }
 @media (max-width: 560px) { .wa-float span { display: none; } .wa-float { padding: .8rem; } }
+.hero__note { font-size: .92rem; color: var(--accent-dark); background: var(--bg-soft); border-left: 3px solid var(--accent); padding: .7rem 1rem; border-radius: 8px; margin: -0.5rem 0 2rem; max-width: 460px; }
+.about__warn { font-size: .9rem; color: var(--terra); background: #f8ece5; border-radius: 10px; padding: .8rem 1rem; margin-top: 1.2rem; }
+.search-wrap { max-width: 440px; margin: 0 auto 1.6rem; position: relative; }
+.search-wrap input { width: 100%; padding: .8rem 1.1rem .8rem 2.6rem; border: 1px solid var(--line); border-radius: 100px; background: var(--card); font-family: var(--font-sans); font-size: .95rem; color: var(--ink); }
+.search-wrap input:focus { outline: none; border-color: var(--accent); }
+.search-wrap::before { content: "⌕"; position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-size: 1.3rem; color: var(--ink-soft); }
+.card__badge--nuevo { color: #fff; background: var(--accent); }
+.card__count { position: absolute; bottom: 12px; right: 12px; background: rgba(44,39,36,.75); color: #fff; font-size: .72rem; padding: .2rem .55rem; border-radius: 100px; display: flex; align-items: center; gap: .25rem; }
+.card__img { cursor: pointer; }
+/* Modal de producto / galería */
+.modal-overlay { position: fixed; inset: 0; background: rgba(30,24,20,.55); opacity: 0; visibility: hidden; transition: .3s; z-index: 190; }
+.modal-overlay.is-open { opacity: 1; visibility: visible; }
+.modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-48%); width: min(880px, 92%); max-height: 90vh; overflow: auto; background: var(--bg); border-radius: 20px; z-index: 195; opacity: 0; visibility: hidden; transition: .3s; box-shadow: 0 30px 80px rgba(0,0,0,.3); display: grid; grid-template-columns: 1.1fr 1fr; }
+.modal.is-open { opacity: 1; visibility: visible; transform: translate(-50%,-50%); }
+.modal__close { position: absolute; top: 12px; right: 14px; background: rgba(255,255,255,.85); border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; color: var(--ink); z-index: 2; }
+.modal__gallery { padding: 1rem; }
+.modal__main { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 14px; background: var(--bg-soft); }
+.modal__thumbs { display: flex; gap: .5rem; margin-top: .6rem; flex-wrap: wrap; }
+.modal__thumbs img { width: 56px; height: 68px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid transparent; }
+.modal__thumbs img.is-active { border-color: var(--accent); }
+.modal__info { padding: 2rem 2rem 2rem 1rem; display: flex; flex-direction: column; }
+.modal__cat { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-dark); }
+.modal__info h3 { font-family: var(--font-serif); font-size: 2rem; margin: .3rem 0; }
+.modal__badge { align-self: flex-start; font-size: .74rem; padding: .25rem .7rem; border-radius: 100px; background: var(--bg-soft); color: var(--accent-dark); margin-bottom: .8rem; }
+.modal__badge.is-nuevo { background: var(--accent); color: #fff; }
+.modal__price { font-family: var(--font-serif); font-size: 1.8rem; font-weight: 600; margin: .6rem 0 1.4rem; }
+.modal__info .btn { margin-bottom: .6rem; }
+@media (max-width: 700px) { .modal { grid-template-columns: 1fr; } .modal__info { padding: 1rem 1.5rem 1.8rem; } }
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: #fff; padding: .8rem 1.4rem; border-radius: 100px; font-size: .9rem; opacity: 0; visibility: hidden; transition: .3s; z-index: 200; }
 .toast.is-visible { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
 @media (max-width: 900px) {
@@ -217,7 +245,8 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
     <div class="hero__text">
       <p class="eyebrow">Segunda mano · Compra y venta de usado</p>
       <h1>De todo un poco,<br/><em>con segunda vida</em></h1>
-      <p class="hero__lead">Ropa, tecnología, muebles, cosas de bebé y mucho más. Usado en buen estado y a precio real. Lo que te guste, me escribís por WhatsApp y lo resolvemos.</p>
+      <p class="hero__lead">Vas a encontrar desde prendas y accesorios hasta objetos seleccionados. Con opciones nuevas con etiqueta, sin uso o en perfectas condiciones. Lo que te guste, me escribís por WhatsApp y coordinamos.</p>
+      <p class="hero__note">💡 Además podés vender lo que ya no uses. Contactanos para saber cómo funciona.</p>
       <div class="hero__actions">
         <a href="#catalogo" class="btn btn--dark">Ver catálogo</a>
         <a href="#circular" class="btn btn--ghost">Qué es la moda circular</a>
@@ -239,7 +268,7 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
   <div class="container values__grid">
     <div class="value"><div class="value__n">01</div><h3>Sostenible</h3><p>Menos descarte, más reúso. Segunda mano.</p></div>
     <div class="value"><div class="value__n">02</div><h3>Revisado</h3><p>Cada cosa chequeada por mí antes de venderla.</p></div>
-    <div class="value"><div class="value__n">03</div><h3>Variado</h3><p>Ropa, tecnología, muebles, bebés y más.</p></div>
+    <div class="value"><div class="value__n">03</div><h3>Variado</h3><p>Ropa, tecnología, muebles, infantiles y más.</p></div>
     <div class="value"><div class="value__n">04</div><h3>Accesible</h3><p>Buenos productos a precio justo.</p></div>
   </div>
 </section>
@@ -249,7 +278,10 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
     <div class="section-head">
       <p class="eyebrow">Nuestra selección</p>
       <h2>Catálogo</h2>
-      <p class="section-sub">Cosas usadas en buen estado, listas para una segunda vida. Lo que te guste, me escribís.</p>
+      <p class="section-sub">Cosas seleccionadas, listas para una segunda vida. Lo que te guste, me escribís.</p>
+    </div>
+    <div class="search-wrap">
+      <input type="search" id="searchInput" placeholder="Buscar por nombre, categoría o detalle..." aria-label="Buscar" />
     </div>
     <div class="filters" id="filters">
       <button class="filter is-active" data-filter="todo">Todo</button>
@@ -289,8 +321,9 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
     <div class="about__text">
       <p class="eyebrow">Nosotras</p>
       <h2>Detrás de Baskara</h2>
-      <p>Baskara nació de las ganas de darle una segunda vida a las cosas y de cambiar la forma en que consumimos. Vendo de todo un poco: ropa, tecnología, muebles, cosas de bebé y más.</p>
-      <p>Cada cosa la reviso yo antes de publicarla. Lo que te interese, me escribís por WhatsApp y coordinamos precio, pago y envío. ¡Fácil!</p>
+      <p>Baskara nació de las ganas de darle una segunda vida a las cosas y de cambiar la forma en que consumimos. ¡Encontrá todo lo disponible en el catálogo!</p>
+      <p>Lo que te interese, me escribís por WhatsApp y coordinamos el pago y envío.</p>
+      <p class="about__warn">⚠️ No realizamos cambios ni devoluciones. Por eso podés pedir más fotos, medidas y las consultas que necesites antes de realizar la compra.</p>
     </div>
   </div>
 </section>
@@ -302,7 +335,7 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
     <p class="section-sub">Escribinos y te respondemos a la brevedad. También recibimos prendas para sumar al ciclo.</p>
     <div class="contact__links">
       <a href="https://wa.me/5490000000000" target="_blank" class="btn btn--dark">WhatsApp</a>
-      <a href="https://instagram.com" target="_blank" class="btn btn--ghost">Instagram</a>
+      <a href="https://instagram.com/baskara.clothing" target="_blank" class="btn btn--ghost">@baskara.clothing</a>
     </div>
   </div>
 </section>
@@ -316,7 +349,7 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
     <div class="footer__cols">
       <div><h4>Tienda</h4><a href="#catalogo">Catálogo</a><a href="#circular">Moda circular</a></div>
       <div><h4>Info</h4><a href="#nosotras">Nosotras</a><a href="#contacto">Contacto</a></div>
-      <div><h4>Seguinos</h4><a href="https://instagram.com" target="_blank">Instagram</a><a href="https://wa.me/5490000000000" target="_blank">WhatsApp</a></div>
+      <div><h4>Seguinos</h4><a href="https://instagram.com/baskara.clothing" target="_blank">@baskara.clothing</a><a href="https://wa.me/5490000000000" target="_blank">WhatsApp</a></div>
     </div>
   </div>
   <div class="container footer__bottom">© <span id="year"></span> Baskara. Moda circular con propósito. · <a href="admin.html" style="color:#9c9082">Administrar</a></div>
@@ -341,6 +374,24 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
   <span>Escribinos</span>
 </a>
 
+<div class="modal-overlay" id="modalOverlay"></div>
+<div class="modal" id="productModal" aria-hidden="true">
+  <button class="modal__close" id="modalClose" aria-label="Cerrar">×</button>
+  <div class="modal__gallery">
+    <img class="modal__main" id="modalMain" src="" alt="" />
+    <div class="modal__thumbs" id="modalThumbs"></div>
+  </div>
+  <div class="modal__info">
+    <span class="modal__cat" id="modalCat"></span>
+    <h3 id="modalTitle"></h3>
+    <span class="modal__badge" id="modalBadge"></span>
+    <p id="modalDetail" style="color:var(--ink-soft)"></p>
+    <div class="modal__price" id="modalPrice"></div>
+    <button class="btn btn--dark" id="modalAdd">Agregar al carrito</button>
+    <a class="btn btn--ghost" id="modalWa" target="_blank">Consultar por WhatsApp</a>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -363,29 +414,41 @@ let products = [
   { id: 7,  cat: "muebles",     title: "Silla de madera",       detail: "Restaurada · Muy bueno", price: 14000, img: "https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=500&q=80" },
   { id: 8,  cat: "muebles",     title: "Sillón 2 cuerpos",      detail: "Living · Bueno",       price: 68000,  img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=500&q=80", sold: true },
   { id: 9,  cat: "muebles",     title: "Lámpara de escritorio", detail: "Funciona · Muy bueno", price: 8500,   img: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=500&q=80" },
-  { id: 10, cat: "bebes",       title: "Set de mamaderas x3",   detail: "Esterilizadas · Como nuevo", price: 6500, img: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=500&q=80" },
-  { id: 11, cat: "bebes",       title: "Cochecito plegable",    detail: "Liviano · Muy bueno",  price: 45000,  img: "https://images.unsplash.com/photo-1546015720-b8b30df5aa27?auto=format&fit=crop&w=500&q=80" },
+  { id: 10, cat: "infantiles",       title: "Set de mamaderas x3",   detail: "Esterilizadas · Como nuevo", price: 6500, img: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=500&q=80" },
+  { id: 11, cat: "infantiles",       title: "Cochecito plegable",    detail: "Liviano · Muy bueno",  price: 45000,  img: "https://images.unsplash.com/photo-1546015720-b8b30df5aa27?auto=format&fit=crop&w=500&q=80" },
   { id: 12, cat: "hogar",       title: "Juego de vajilla",      detail: "12 piezas · Muy bueno", price: 12000,  img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&q=80" },
   { id: 13, cat: "hogar",       title: "Juego de sábanas",      detail: "2 plazas · Como nuevo", price: 9000,   img: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=500&q=80" },
   { id: 14, cat: "accesorios",  title: "Bolso de cuero",        detail: "Marrón · Bueno",       price: 15200,  img: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=500&q=80" },
   { id: 15, cat: "accesorios",  title: "Reloj clásico",         detail: "Andando · Muy bueno",  price: 24000,  img: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=500&q=80" },
 ];
 
-const money = n => "$" + n.toLocaleString("es-AR");
+const money = n => "$" + Number(n || 0).toLocaleString("es-AR");
 const grid = document.getElementById("productGrid");
 
+// Devuelve todas las fotos de un producto (soporta varias en p.imgs, o la vieja p.img)
+function allImgs(p) {
+  let a = Array.isArray(p.imgs) ? p.imgs.filter(Boolean) : [];
+  if (!a.length && p.img) a = [p.img];
+  return a;
+}
+function mainImg(p) { return allImgs(p)[0] || ""; }
+function estadoLabel(p) { return (p.estado || "usado").toLowerCase() === "nuevo" ? "Nuevo" : "Usado"; }
+
 function cardHTML(p) {
+  const imgs = allImgs(p);
+  const nuevo = estadoLabel(p) === "Nuevo";
   return `
-    <article class="card ${p.sold ? "is-sold" : ""}" data-cat="${p.cat}">
+    <article class="card ${p.sold ? "is-sold" : ""}" data-id="${p.id}" data-cat="${p.cat}">
       <div class="card__img">
-        <img src="${p.img}" alt="${p.title}" loading="lazy"/>
-        <span class="card__badge">${p.sold ? "Vendido" : "Usado"}</span>
+        <img src="${mainImg(p)}" alt="${p.title}" loading="lazy"/>
+        <span class="card__badge ${nuevo ? "card__badge--nuevo" : ""}">${p.sold ? "Vendido" : estadoLabel(p)}</span>
         <button class="card__fav" aria-label="Favorito">♡</button>
+        ${imgs.length > 1 ? `<span class="card__count">📷 ${imgs.length}</span>` : ""}
       </div>
       <div class="card__body">
         <span class="card__cat">${p.cat}</span>
         <h3 class="card__title">${p.title}</h3>
-        <span class="card__meta">${p.detail} · Pieza única</span>
+        <span class="card__meta">${p.detail || ""}</span>
         <div class="card__foot">
           <span class="card__price">${money(p.price)}</span>
           <button class="card__add" data-id="${p.id}">${p.sold ? "Agotado" : "Agregar"}</button>
@@ -394,6 +457,8 @@ function cardHTML(p) {
     </article>`;
 }
 const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+let currentFilter = "todo";
+let currentSearch = "";
 // Arma los botones de filtro solos según las categorías que uses en tus productos
 function buildFilters() {
   const cats = [];
@@ -401,24 +466,30 @@ function buildFilters() {
     const c = (p.cat || "").trim();
     if (c && !cats.some(x => x.toLowerCase() === c.toLowerCase())) cats.push(c);
   });
-  const activeEl = document.querySelector(".filter.is-active");
-  const active = activeEl ? activeEl.dataset.filter : "todo";
   document.getElementById("filters").innerHTML =
     `<button class="filter" data-filter="todo">Todo</button>` +
     cats.map(c => `<button class="filter" data-filter="${c}">${cap(c)}</button>`).join("");
   const btns = document.querySelectorAll(".filter");
   let matched = false;
-  btns.forEach(b => { if (b.dataset.filter.toLowerCase() === active.toLowerCase()) { b.classList.add("is-active"); matched = true; } });
-  if (!matched && btns[0]) btns[0].classList.add("is-active");
+  btns.forEach(b => { if (b.dataset.filter.toLowerCase() === currentFilter.toLowerCase()) { b.classList.add("is-active"); matched = true; } });
+  if (!matched && btns[0]) { btns[0].classList.add("is-active"); currentFilter = "todo"; }
 }
-function render(filter = "todo") {
-  const list = products.filter(p => filter === "todo" || (p.cat || "").toLowerCase() === filter.toLowerCase());
+function render() {
+  const q = currentSearch.trim().toLowerCase();
+  const list = products.filter(p => {
+    const okCat = currentFilter === "todo" || (p.cat || "").toLowerCase() === currentFilter.toLowerCase();
+    const okQ = !q || `${p.title || ""} ${p.detail || ""} ${p.cat || ""}`.toLowerCase().includes(q);
+    return okCat && okQ;
+  });
   grid.innerHTML = list.length
     ? list.map(cardHTML).join("")
-    : `<p style="grid-column:1/-1;text-align:center;color:var(--ink-soft);padding:2rem">No hay productos en esta categoría todavía.</p>`;
+    : `<p style="grid-column:1/-1;text-align:center;color:var(--ink-soft);padding:2rem">No se encontraron productos${q ? ' para "' + currentSearch + '"' : " en esta categoría todavía"}.</p>`;
 }
 buildFilters();
 render();
+
+// Buscador
+document.getElementById("searchInput").addEventListener("input", e => { currentSearch = e.target.value; render(); });
 
 // Cargar productos reales desde Supabase (si config.js está configurado)
 function supaConfigured() {
@@ -433,10 +504,8 @@ async function loadProducts() {
     if (error) throw error;
     if (Array.isArray(data)) {
       products = data;
-      const active = document.querySelector(".filter.is-active");
-      const cur = active ? active.dataset.filter : "todo";
       buildFilters();
-      render(cur);
+      render();
     }
   } catch (e) { console.warn("No se pudieron cargar productos de Supabase:", e.message); }
 }
@@ -447,18 +516,60 @@ document.getElementById("filters").addEventListener("click", e => {
   if (!btn) return;
   document.querySelectorAll(".filter").forEach(f => f.classList.remove("is-active"));
   btn.classList.add("is-active");
-  render(btn.dataset.filter);
+  currentFilter = btn.dataset.filter;
+  render();
 });
+
+function findProduct(id) { return products.find(x => String(x.id) === String(id)); }
+function addToCart(p) {
+  if (!p || p.sold) return;
+  if (cart.some(x => x.id === p.id)) { toast("Ya está en tu carrito · es única"); return; }
+  cart.push(p); updateCart(); toast("Agregado al carrito ✓"); openDrawer();
+}
 
 grid.addEventListener("click", e => {
   const fav = e.target.closest(".card__fav");
-  if (fav) { fav.textContent = fav.textContent === "♡" ? "♥" : "♡"; }
-  const btn = e.target.closest(".card__add");
-  if (!btn || btn.textContent === "Agotado") return;
-  const p = products.find(x => x.id === +btn.dataset.id);
-  if (cart.some(x => x.id === p.id)) { toast("Ya está en tu carrito · es única"); return; }
-  cart.push(p); updateCart(); toast("Agregado al carrito ✓"); openDrawer();
+  if (fav) { fav.textContent = fav.textContent === "♡" ? "♥" : "♡"; return; }
+  const add = e.target.closest(".card__add");
+  if (add) { if (add.textContent !== "Agotado") addToCart(findProduct(add.dataset.id)); return; }
+  const card = e.target.closest(".card");
+  if (card) openModal(findProduct(card.dataset.id));
 });
+
+// ----- Ventana de producto (galería de fotos) -----
+const modal = document.getElementById("productModal");
+const modalOverlay = document.getElementById("modalOverlay");
+let modalProduct = null;
+function openModal(p) {
+  if (!p) return;
+  modalProduct = p;
+  const imgs = allImgs(p);
+  document.getElementById("modalCat").textContent = p.cat || "";
+  document.getElementById("modalTitle").textContent = p.title || "";
+  const badge = document.getElementById("modalBadge");
+  badge.textContent = p.sold ? "Vendido" : estadoLabel(p);
+  badge.classList.toggle("is-nuevo", !p.sold && estadoLabel(p) === "Nuevo");
+  document.getElementById("modalDetail").textContent = p.detail || "";
+  document.getElementById("modalPrice").textContent = money(p.price);
+  document.getElementById("modalMain").src = imgs[0] || "";
+  document.getElementById("modalThumbs").innerHTML = imgs.length > 1
+    ? imgs.map((src, i) => `<img src="${src}" class="${i === 0 ? "is-active" : ""}"/>`).join("") : "";
+  const addBtn = document.getElementById("modalAdd");
+  addBtn.style.display = p.sold ? "none" : "";
+  document.getElementById("modalWa").href =
+    `https://wa.me/${WHATSAPP}?text=${encodeURIComponent("¡Hola Baskara! Me interesa: " + (p.title || "") + " (" + money(p.price) + ")")}`;
+  modal.classList.add("is-open"); modalOverlay.classList.add("is-open");
+}
+function closeModal() { modal.classList.remove("is-open"); modalOverlay.classList.remove("is-open"); }
+document.getElementById("modalClose").addEventListener("click", closeModal);
+modalOverlay.addEventListener("click", closeModal);
+document.getElementById("modalThumbs").addEventListener("click", e => {
+  const t = e.target.closest("img"); if (!t) return;
+  document.getElementById("modalMain").src = t.src;
+  document.querySelectorAll("#modalThumbs img").forEach(x => x.classList.remove("is-active"));
+  t.classList.add("is-active");
+});
+document.getElementById("modalAdd").addEventListener("click", () => { addToCart(modalProduct); closeModal(); });
 
 let cart = [];
 const cartCount = document.getElementById("cartCount");
@@ -472,7 +583,7 @@ function updateCart() {
   } else {
     cartItems.innerHTML = cart.map(p => `
       <div class="cart-item">
-        <img class="cart-item__thumb" src="${p.img}" alt="${p.title}"/>
+        <img class="cart-item__thumb" src="${mainImg(p)}" alt="${p.title}"/>
         <div class="cart-item__info">
           <h4>${p.title}</h4>
           <span>${p.detail} · ${p.cat}</span>

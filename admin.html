@@ -57,7 +57,13 @@ textarea{resize:vertical;min-height:60px}
 .prod__info span{display:block;font-size:.8rem;color:var(--ink-soft)}
 .prod__actions{display:flex;gap:.5rem;flex-shrink:0}
 .tag-sold{font-size:.7rem;background:var(--terra);color:#fff;padding:.1rem .5rem;border-radius:100px;margin-left:.4rem}
+.tag-estado{font-size:.7rem;background:var(--bg-soft);color:var(--accent-dark);padding:.1rem .5rem;border-radius:100px;margin-left:.4rem}
 .preview-img{width:80px;height:100px;object-fit:cover;border-radius:8px;margin-top:.5rem;display:none}
+.previews{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem}
+.previews img{width:70px;height:88px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.radios{display:flex;gap:1.4rem;margin-top:.2rem}
+.radio{display:inline-flex;align-items:center;gap:.4rem;font-size:.95rem;color:var(--ink);cursor:pointer}
+.radio input{width:auto;margin:0}
 .muted{color:var(--ink-soft);font-size:.85rem}
 @media(max-width:640px){.row,.grid-form{grid-template-columns:1fr}}
 </style>
@@ -125,9 +131,17 @@ textarea{resize:vertical;min-height:60px}
           <input type="text" id="pDetail" placeholder="Ej: Talle M · Muy bueno" />
         </div>
         <div class="full">
-          <label>Foto</label>
-          <input type="file" id="pImage" accept="image/*" />
-          <img id="pPreview" class="preview-img" alt="preview" />
+          <label>Estado *</label>
+          <div class="radios">
+            <label class="radio"><input type="radio" name="estado" value="usado" checked/> Usado</label>
+            <label class="radio"><input type="radio" name="estado" value="nuevo"/> Nuevo</label>
+          </div>
+        </div>
+        <div class="full">
+          <label>Fotos <span class="muted" style="font-weight:400">(podés elegir varias)</span></label>
+          <input type="file" id="pImage" accept="image/*" multiple />
+          <div id="pPreview" class="previews"></div>
+          <p class="muted" style="font-size:.78rem;margin-top:.3rem">Tip: la primera foto es la principal. Si editás y no elegís fotos nuevas, quedan las actuales.</p>
         </div>
         <div class="check">
           <input type="checkbox" id="pSold" /><label for="pSold" style="margin:0">Marcar como vendido</label>
@@ -162,7 +176,9 @@ if (!configured() || !window.supabase) {
   $("setupNotice").classList.remove("hidden");
 } else {
   const sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-  let editingId = null, editingImg = "";
+  let editingId = null, editingImgs = [];
+  const estadoValue = () => (document.querySelector('input[name="estado"]:checked') || {}).value || "usado";
+  function renderPreviews(urls){ $("pPreview").innerHTML = (urls || []).map(u => `<img src="${u}" alt=""/>`).join(""); }
 
   function show(view){ ["setupNotice","loginView","panelView"].forEach(v=>$(v).classList.add("hidden")); $(view).classList.remove("hidden"); }
   function msg(el, text, ok){ el.innerHTML = `<div class="msg ${ok?'msg--ok':'msg--err'}">${text}</div>`; }
@@ -183,12 +199,11 @@ if (!configured() || !window.supabase) {
 
   $("logoutBtn").addEventListener("click", async () => { await sb.auth.signOut(); resetForm(); show("loginView"); });
 
-  // ----- Vista previa de la foto -----
+  // ----- Vista previa de las fotos -----
   $("pImage").addEventListener("change", () => {
-    const f = $("pImage").files[0];
-    const prev = $("pPreview");
-    if (f) { prev.src = URL.createObjectURL(f); prev.style.display = "block"; }
-    else { prev.style.display = "none"; }
+    const files = [...$("pImage").files];
+    if (files.length) renderPreviews(files.map(f => URL.createObjectURL(f)));
+    else renderPreviews(editingImgs);
   });
 
   // ----- Guardar (agregar o editar) -----
@@ -197,21 +212,28 @@ if (!configured() || !window.supabase) {
     const btn = $("saveBtn"); btn.disabled = true; const original = btn.textContent; btn.textContent = "Guardando…";
     $("formMsg").innerHTML = "";
     try {
-      let imgUrl = editingImg || "";
-      const file = $("pImage").files[0];
-      if (file) {
-        const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-        const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-        const { error: upErr } = await sb.storage.from("productos").upload(path, file, { upsert:false });
-        if (upErr) throw upErr;
-        imgUrl = sb.storage.from("productos").getPublicUrl(path).data.publicUrl;
+      let imgs = editingImgs.slice();
+      const files = [...$("pImage").files];
+      if (files.length) {
+        imgs = []; // fotos nuevas reemplazan a las anteriores
+        let n = 0;
+        for (const file of files) {
+          n++; btn.textContent = `Subiendo foto ${n}/${files.length}…`;
+          const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+          const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+          const { error: upErr } = await sb.storage.from("productos").upload(path, file, { upsert:false });
+          if (upErr) throw upErr;
+          imgs.push(sb.storage.from("productos").getPublicUrl(path).data.publicUrl);
+        }
       }
       const row = {
         title: $("pTitle").value.trim(),
-        cat: $("pCat").value,
+        cat: $("pCat").value.trim(),
         detail: $("pDetail").value.trim(),
         price: Number($("pPrice").value),
-        img: imgUrl,
+        estado: estadoValue(),
+        imgs: imgs,
+        img: imgs[0] || "",
         sold: $("pSold").checked
       };
       let error;
@@ -230,23 +252,30 @@ if (!configured() || !window.supabase) {
   $("cancelBtn").addEventListener("click", resetForm);
 
   function resetForm(){
-    editingId = null; editingImg = "";
+    editingId = null; editingImgs = [];
     $("productForm").reset();
-    $("pPreview").style.display = "none";
+    renderPreviews([]);
     $("formTitle").textContent = "Agregar producto";
     $("saveBtn").textContent = "Guardar producto";
     $("cancelBtn").classList.add("hidden");
   }
 
+  function productImgs(p){
+    return Array.isArray(p.imgs) && p.imgs.length ? p.imgs.filter(Boolean) : (p.img ? [p.img] : []);
+  }
+
   function edit(p){
-    editingId = p.id; editingImg = p.img || "";
+    editingId = p.id;
+    editingImgs = productImgs(p);
     $("pTitle").value = p.title || "";
-    $("pCat").value = p.cat || "ropa";
+    $("pCat").value = p.cat || "";
     $("pPrice").value = p.price || 0;
     $("pDetail").value = p.detail || "";
     $("pSold").checked = !!p.sold;
-    const prev = $("pPreview");
-    if (p.img){ prev.src = p.img; prev.style.display = "block"; } else prev.style.display = "none";
+    const est = (p.estado || "usado").toLowerCase() === "nuevo" ? "nuevo" : "usado";
+    const radio = document.querySelector(`input[name="estado"][value="${est}"]`);
+    if (radio) radio.checked = true;
+    renderPreviews(editingImgs);
     $("formTitle").textContent = "Editar producto";
     $("saveBtn").textContent = "Guardar cambios";
     $("cancelBtn").classList.remove("hidden");
@@ -260,7 +289,7 @@ if (!configured() || !window.supabase) {
     loadList();
   }
 
-  const DEFAULT_CATS = ["Mujeres","Hombres","Ropa","Tecnología","Muebles","Bebés","Hogar","Accesorios"];
+  const DEFAULT_CATS = ["Mujeres","Hombres","Infantiles","Ropa","Tecnología","Muebles","Hogar","Accesorios"];
   function fillCats(data){
     const set = [...DEFAULT_CATS];
     (data||[]).forEach(p => { const c=(p.cat||"").trim(); if(c && !set.some(x=>x.toLowerCase()===c.toLowerCase())) set.push(c); });
@@ -277,11 +306,12 @@ if (!configured() || !window.supabase) {
     data.forEach(p => {
       const div = document.createElement("div");
       div.className = "prod";
+      const imgs = productImgs(p);
       div.innerHTML = `
-        <img src="${p.img||""}" alt="" onerror="this.style.visibility='hidden'"/>
+        <img src="${imgs[0]||""}" alt="" onerror="this.style.visibility='hidden'"/>
         <div class="prod__info">
-          <b>${p.title}</b>${p.sold?'<span class="tag-sold">Vendido</span>':''}
-          <span>${p.cat} · ${p.detail||"—"} · ${money(p.price)}</span>
+          <b>${p.title}</b>${p.sold?'<span class="tag-sold">Vendido</span>':`<span class="tag-estado">${(p.estado||'usado').toLowerCase()==='nuevo'?'Nuevo':'Usado'}</span>`}
+          <span>${p.cat} · ${p.detail||"—"} · ${money(p.price)}${imgs.length>1?` · 📷 ${imgs.length}`:''}</span>
         </div>
         <div class="prod__actions">
           <button class="btn btn--ghost btn--sm">Editar</button>

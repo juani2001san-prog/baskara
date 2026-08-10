@@ -16,6 +16,10 @@ create table if not exists public.productos (
   sold       boolean default false
 );
 
+-- Columnas nuevas (estado nuevo/usado + varias fotos). Si la tabla ya existía, las agrega.
+alter table public.productos add column if not exists estado text default 'usado';
+alter table public.productos add column if not exists imgs jsonb default '[]'::jsonb;
+
 alter table public.productos enable row level security;
 
 -- Cualquiera puede VER los productos (la tienda es pública)
