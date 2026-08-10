@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Baskara · Moda Circular</title>
 <meta name="description" content="Baskara — moda circular. Ropa usada seleccionada con amor. Dale una segunda vida a las prendas." />
+<link rel="icon" type="image/png" href="favicon.png" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -68,7 +70,8 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
   border-bottom: 1px solid var(--line);
 }
 .header__inner { display: flex; align-items: center; justify-content: space-between; height: 70px; }
-.logo { font-family: var(--font-serif); font-size: 1.7rem; font-weight: 600; letter-spacing: .04em; color: var(--ink); }
+.logo { font-family: var(--font-serif); font-size: 1.7rem; font-weight: 600; letter-spacing: .04em; color: var(--ink); display: inline-flex; align-items: center; gap: .5rem; }
+.logo-img { height: 34px; width: auto; display: block; }
 .nav { display: flex; gap: 2rem; }
 .nav a { font-size: .92rem; color: var(--ink-soft); transition: .2s; position: relative; }
 .nav a:hover { color: var(--ink); }
@@ -228,7 +231,7 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
 <header class="header" id="header">
   <div class="container header__inner">
     <button class="nav-toggle" id="navToggle" aria-label="Menú"><span></span><span></span><span></span></button>
-    <a href="#inicio" class="logo">baskara</a>
+    <a href="#inicio" class="logo"><img src="logo.png" alt="Baskara" class="logo-img" /><span>baskara</span></a>
     <nav class="nav" id="nav">
       <a href="#catalogo">Catálogo</a>
       <a href="#circular">Moda circular</a>
@@ -350,7 +353,7 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
 <footer class="footer">
   <div class="container footer__inner">
     <div>
-      <span class="logo">baskara</span>
+      <span class="logo"><img src="logo-white.png" alt="Baskara" class="logo-img" /><span>baskara</span></span>
       <p>Moda circular · Ropa con historia</p>
     </div>
     <div class="footer__cols">
