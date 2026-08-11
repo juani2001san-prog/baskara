@@ -163,21 +163,41 @@ textarea{resize:vertical;min-height:60px}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+<script type="module">
+  // Conversor HEIC moderno (soporta los HEIC de iPhone nuevos)
+  try { const m = await import("https://cdn.jsdelivr.net/npm/heic-to@1.1.14/+esm"); window.heicTo = m.heicTo; }
+  catch (e) { console.warn("heic-to no cargó:", e); }
+</script>
 <script src="config.js"></script>
 <script>
 const $ = id => document.getElementById(id);
 
-// Convierte HEIC (iPhone) a JPG automáticamente; el resto lo deja igual
+function isHeicFile(file) {
+  const n = (file.name || "").toLowerCase();
+  return /image\/(heic|heif)/.test(file.type || "") || n.endsWith(".heic") || n.endsWith(".heif");
+}
+// Convierte un HEIC a JPG probando varios métodos en cascada
+async function heicToJpg(file) {
+  // 1) Nativo: Safari/macOS decodifican HEIC directo
+  try {
+    const bmp = await createImageBitmap(file);
+    const c = document.createElement("canvas"); c.width = bmp.width; c.height = bmp.height;
+    c.getContext("2d").drawImage(bmp, 0, 0);
+    const b = await new Promise(r => c.toBlob(r, "image/jpeg", 0.85));
+    if (b && b.size) return b;
+  } catch (e) {}
+  // 2) heic-to (libheif moderno)
+  try {
+    if (window.heicTo) { const b = await window.heicTo({ blob: file, type: "image/jpeg", quality: 0.85 }); if (b && b.size) return b; }
+  } catch (e) {}
+  // 3) heic2any (fallback viejo)
+  if (window.heic2any) { const out = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.85 }); const b = Array.isArray(out) ? out[0] : out; if (b && b.size) return b; }
+  throw new Error("HEIC no soportado");
+}
+// Prepara un archivo para subir (convierte HEIC; el resto lo deja igual)
 async function prepareFile(file) {
-  const name = (file.name || "").toLowerCase();
-  const isHeic = file.type === "image/heic" || file.type === "image/heif" ||
-                 name.endsWith(".heic") || name.endsWith(".heif");
-  if (isHeic && window.heic2any) {
-    const out = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.85 });
-    const blob = Array.isArray(out) ? out[0] : out;
-    return { blob, ext: "jpg" };
-  }
-  const ext = (name.split(".").pop() || "jpg").toLowerCase();
+  if (isHeicFile(file)) { return { blob: await heicToJpg(file), ext: "jpg" }; }
+  const ext = ((file.name || "").split(".").pop() || "jpg").toLowerCase();
   return { blob: file, ext };
 }
 const money = n => "$" + Number(n||0).toLocaleString("es-AR");
@@ -220,15 +240,14 @@ if (!configured() || !window.supabase) {
     if (!files.length) { pendingFiles = []; renderPreviews(editingImgs); return; }
     $("pPreview").innerHTML = '<p class="muted" style="font-size:.8rem">Procesando fotos… (si son de iPhone puede tardar unos segundos)</p>';
     $("formMsg").innerHTML = "";
-    try {
-      pendingFiles = [];
-      for (const f of files) pendingFiles.push(await prepareFile(f));
-      renderPreviews(pendingFiles.map(p => URL.createObjectURL(p.blob)));
-    } catch (e) {
-      pendingFiles = [];
-      renderPreviews(editingImgs);
-      msg($("formMsg"), "No se pudo procesar una imagen: " + e.message);
+    pendingFiles = [];
+    let fallidas = 0;
+    for (const f of files) {
+      try { pendingFiles.push(await prepareFile(f)); }
+      catch (e) { fallidas++; }
     }
+    renderPreviews(pendingFiles.length ? pendingFiles.map(p => URL.createObjectURL(p.blob)) : editingImgs);
+    if (fallidas) msg($("formMsg"), `No se pudieron procesar ${fallidas} foto(s). Probá con otra. Tip: en el iPhone podés poner Ajustes → Cámara → Formatos → "Más compatible" para que saque JPG.`);
   });
 
   // ----- Guardar (agregar o editar) -----
