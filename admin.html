@@ -139,9 +139,9 @@ textarea{resize:vertical;min-height:60px}
         </div>
         <div class="full">
           <label>Fotos <span class="muted" style="font-weight:400">(podés elegir varias)</span></label>
-          <input type="file" id="pImage" accept="image/*" multiple />
+          <input type="file" id="pImage" accept="image/*,.heic,.heif" multiple />
           <div id="pPreview" class="previews"></div>
-          <p class="muted" style="font-size:.78rem;margin-top:.3rem">Tip: la primera foto es la principal. Si editás y no elegís fotos nuevas, quedan las actuales.</p>
+          <p class="muted" style="font-size:.78rem;margin-top:.3rem">Tip: la primera foto es la principal. Las fotos de iPhone (HEIC) se convierten solas a JPG. Si editás y no elegís fotos nuevas, quedan las actuales.</p>
         </div>
         <div class="check">
           <input type="checkbox" id="pSold" /><label for="pSold" style="margin:0">Marcar como vendido</label>
@@ -162,9 +162,24 @@ textarea{resize:vertical;min-height:60px}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 <script src="config.js"></script>
 <script>
 const $ = id => document.getElementById(id);
+
+// Convierte HEIC (iPhone) a JPG automáticamente; el resto lo deja igual
+async function prepareFile(file) {
+  const name = (file.name || "").toLowerCase();
+  const isHeic = file.type === "image/heic" || file.type === "image/heif" ||
+                 name.endsWith(".heic") || name.endsWith(".heif");
+  if (isHeic && window.heic2any) {
+    const out = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.85 });
+    const blob = Array.isArray(out) ? out[0] : out;
+    return { blob, ext: "jpg" };
+  }
+  const ext = (name.split(".").pop() || "jpg").toLowerCase();
+  return { blob: file, ext };
+}
 const money = n => "$" + Number(n||0).toLocaleString("es-AR");
 
 function configured(){
@@ -176,7 +191,7 @@ if (!configured() || !window.supabase) {
   $("setupNotice").classList.remove("hidden");
 } else {
   const sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-  let editingId = null, editingImgs = [];
+  let editingId = null, editingImgs = [], pendingFiles = [];
   const estadoValue = () => (document.querySelector('input[name="estado"]:checked') || {}).value || "usado";
   function renderPreviews(urls){ $("pPreview").innerHTML = (urls || []).map(u => `<img src="${u}" alt=""/>`).join(""); }
 
@@ -199,11 +214,21 @@ if (!configured() || !window.supabase) {
 
   $("logoutBtn").addEventListener("click", async () => { await sb.auth.signOut(); resetForm(); show("loginView"); });
 
-  // ----- Vista previa de las fotos -----
-  $("pImage").addEventListener("change", () => {
+  // ----- Vista previa de las fotos (convierte HEIC de iPhone a JPG) -----
+  $("pImage").addEventListener("change", async () => {
     const files = [...$("pImage").files];
-    if (files.length) renderPreviews(files.map(f => URL.createObjectURL(f)));
-    else renderPreviews(editingImgs);
+    if (!files.length) { pendingFiles = []; renderPreviews(editingImgs); return; }
+    $("pPreview").innerHTML = '<p class="muted" style="font-size:.8rem">Procesando fotos… (si son de iPhone puede tardar unos segundos)</p>';
+    $("formMsg").innerHTML = "";
+    try {
+      pendingFiles = [];
+      for (const f of files) pendingFiles.push(await prepareFile(f));
+      renderPreviews(pendingFiles.map(p => URL.createObjectURL(p.blob)));
+    } catch (e) {
+      pendingFiles = [];
+      renderPreviews(editingImgs);
+      msg($("formMsg"), "No se pudo procesar una imagen: " + e.message);
+    }
   });
 
   // ----- Guardar (agregar o editar) -----
@@ -213,15 +238,13 @@ if (!configured() || !window.supabase) {
     $("formMsg").innerHTML = "";
     try {
       let imgs = editingImgs.slice();
-      const files = [...$("pImage").files];
-      if (files.length) {
+      if (pendingFiles.length) {
         imgs = []; // fotos nuevas reemplazan a las anteriores
         let n = 0;
-        for (const file of files) {
-          n++; btn.textContent = `Subiendo foto ${n}/${files.length}…`;
-          const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-          const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-          const { error: upErr } = await sb.storage.from("productos").upload(path, file, { upsert:false });
+        for (const pf of pendingFiles) {
+          n++; btn.textContent = `Subiendo foto ${n}/${pendingFiles.length}…`;
+          const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${pf.ext}`;
+          const { error: upErr } = await sb.storage.from("productos").upload(path, pf.blob, { upsert:false, contentType: pf.blob.type || "image/jpeg" });
           if (upErr) throw upErr;
           imgs.push(sb.storage.from("productos").getPublicUrl(path).data.publicUrl);
         }
@@ -252,7 +275,7 @@ if (!configured() || !window.supabase) {
   $("cancelBtn").addEventListener("click", resetForm);
 
   function resetForm(){
-    editingId = null; editingImgs = [];
+    editingId = null; editingImgs = []; pendingFiles = [];
     $("productForm").reset();
     renderPreviews([]);
     $("formTitle").textContent = "Agregar producto";
