@@ -642,10 +642,11 @@ overlay.addEventListener("click", closeDrawer);
 
 document.getElementById("checkoutBtn").addEventListener("click", () => {
   if (!cart.length) { toast("Agregá prendas primero"); return; }
-  const lines = cart.map(p => `• ${p.title} (${p.detail}) — ${money(p.price)}`).join("%0A");
-  const total = money(cart.reduce((s, p) => s + p.price, 0));
-  const msg = `¡Hola Baskara! Quiero llevar estas prendas:%0A%0A${lines}%0A%0ATotal: ${total}`;
-  window.open(`https://wa.me/${WHATSAPP}?text=${msg}`, "_blank");
+  const lines = cart.map((p, i) => `${i + 1}. ${p.title} — ${money(p.price)}`).join("\n");
+  const total = cart.reduce((s, p) => s + p.price, 0);
+  const n = cart.length;
+  const text = `¡Hola Baskara! 🌿 Quiero llevar ${n} ${n === 1 ? "artículo" : "artículos"}:\n\n${lines}\n\n*TOTAL: ${money(total)}*`;
+  window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, "_blank");
 });
 
 const nav = document.getElementById("nav");
