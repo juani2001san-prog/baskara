@@ -117,8 +117,8 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
 .card__body { padding: 1.1rem 1.2rem 1.3rem; display: flex; flex-direction: column; gap: .3rem; flex: 1; }
 .card__cat { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-dark); }
 .card__title { font-family: var(--font-serif); font-size: 1.35rem; }
-.card__meta { font-size: .82rem; color: var(--ink-soft); }
-.card__foot { display: flex; align-items: center; justify-content: space-between; margin-top: .8rem; }
+.card__meta { font-size: .82rem; color: var(--ink-soft); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card__foot { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: auto; padding-top: .8rem; }
 .card__price { font-size: 1.25rem; font-family: var(--font-serif); font-weight: 600; }
 .card__add { background: var(--accent); color: #fff; border: none; padding: .55rem 1rem; border-radius: 100px; font-family: var(--font-sans); font-size: .82rem; cursor: pointer; transition: .2s; }
 .card__add:hover { background: var(--accent-dark); }
@@ -222,7 +222,22 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
   .nav.is-open { transform: translateX(0); }
   .nav-toggle { display: flex; z-index: 61; }
 }
-@media (max-width: 560px) { .values__grid, .grid { grid-template-columns: 1fr; } .hero__stats { gap: 1.6rem; } }
+@media (max-width: 560px) {
+  .values__grid { grid-template-columns: 1fr; }
+  /* Catálogo en mosaico de 2 columnas en el celular */
+  .grid { grid-template-columns: repeat(2, 1fr); gap: .7rem; }
+  .card__body { padding: .7rem .7rem .9rem; gap: .2rem; }
+  .card__cat { font-size: .62rem; letter-spacing: .08em; }
+  .card__title { font-size: 1.02rem; line-height: 1.15; }
+  .card__meta { font-size: .72rem; }
+  .card__foot { flex-direction: column; align-items: stretch; gap: .45rem; padding-top: .6rem; }
+  .card__price { font-size: 1.05rem; }
+  .card__add { width: 100%; padding: .5rem; font-size: .8rem; }
+  .card__badge { font-size: .62rem; padding: .2rem .55rem; top: 8px; left: 8px; }
+  .card__fav { width: 30px; height: 30px; top: 7px; right: 7px; }
+  .card__count { bottom: 8px; right: 8px; font-size: .66rem; }
+  .catalog { padding: 2.5rem 0; }
+}
 </style>
 </head>
 <body>
